@@ -1,0 +1,564 @@
+[
+    {
+        "id": "c3af2d3a3f0580ad",
+        "type": "tab",
+        "label": "Webhooks Talangjakt",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "8331c44f512ed68d",
+        "type": "http in",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Talentshow voting",
+        "url": "/vote",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 140,
+        "wires": [
+            [
+                "5ce773c4b894898a",
+                "0b44a7e78af36f2b"
+            ]
+        ]
+    },
+    {
+        "id": "5ce773c4b894898a",
+        "type": "debug",
+        "z": "c3af2d3a3f0580ad",
+        "name": "debug 24",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1340,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "f23fe2c405a8c931",
+        "type": "function",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Set TalentCode",
+        "func": "\nnode.warn(msg.payload.message)\nconst talentNumber = msg.payload.message\n\nmsg.talentCode = msg.payload.message\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 220,
+        "wires": [
+            [
+                "dfa976608367d6ce"
+            ]
+        ]
+    },
+    {
+        "id": "c7188fdf0345f6d0",
+        "type": "http response",
+        "z": "c3af2d3a3f0580ad",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1240,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "fbdc4ddbfd4a584b",
+        "type": "inject",
+        "z": "c3af2d3a3f0580ad",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"direction\":\"incoming\",\"from\":\"+46xxxxxxx\",\"created\":\"2024-10-31 10:30:19.586480\",\"to\":\"+46xxxxxxxx\",\"message\":\"Talang 1\",\"id\":\"sc5ac067a1ee31f4ef7223e5c072957d3\"}",
+        "payloadType": "json",
+        "x": 230,
+        "y": 240,
+        "wires": [
+            [
+                "f23fe2c405a8c931"
+            ]
+        ]
+    },
+    {
+        "id": "dfa976608367d6ce",
+        "type": "file in",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Load JSON file",
+        "filename": "talent_votes.json",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "utf8",
+        "allProps": false,
+        "x": 620,
+        "y": 220,
+        "wires": [
+            [
+                "ec72a7314b619dcc"
+            ]
+        ]
+    },
+    {
+        "id": "0a79b483b2daac5a",
+        "type": "file",
+        "z": "c3af2d3a3f0580ad",
+        "name": "",
+        "filename": "talent_votes.json",
+        "filenameType": "str",
+        "appendNewline": false,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "utf8",
+        "x": 1110,
+        "y": 320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a4be15495442f815",
+        "type": "inject",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Create JSON FIle",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"show\":\"talentshow-24\",\"talents\":[{\"name\":\"Name 1\",\"code\":\"Talang 1\",\"votes\":\"0\"},{\"name\":\"Name 2\",\"code\":\"Talang 2\",\"votes\":\"0\"},{\"name\":\"Name 3\",\"code\":\"Talang 3\",\"votes\":\"0\"},{\"name\":\"Name 4\",\"code\":\"Talang 4\",\"votes\":\"0\"},{\"name\":\"Name 5\",\"code\":\"Talang 5\",\"votes\":\"0\"},{\"name\":\"Name 6\",\"code\":\"Talang 6\",\"votes\":\"0\"},{\"name\":\"Name 7\",\"code\":\"Talang 7\",\"votes\":\"0\"},{\"name\":\"Name 8\",\"code\":\"Talang 8\",\"votes\":\"0\"}]}",
+        "payloadType": "json",
+        "x": 220,
+        "y": 320,
+        "wires": [
+            [
+                "0a79b483b2daac5a"
+            ]
+        ]
+    },
+    {
+        "id": "ec72a7314b619dcc",
+        "type": "function",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Edit JSON",
+        "func": "// Parse the incoming JSON data\nvar jsonData = JSON.parse(msg.payload);\n\n// Convert both code values to lowercase for case-insensitive comparison\nvar talentCode = msg.talentCode;\n\n// Find the talent with the matching code (case-insensitive)\nvar talentIndex = jsonData.talents.findIndex(talent => talent.code === talentCode);\n\n// If the talent is found, increment the votes\nif (talentIndex !== -1) {\n    jsonData.talents[talentIndex].votes++;\n}\n\n// Update the message payload with the modified JSON\nmsg.payload = JSON.stringify(jsonData);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 790,
+        "y": 220,
+        "wires": [
+            [
+                "5ce773c4b894898a",
+                "0a79b483b2daac5a",
+                "57c2dc69bfaacc36"
+            ]
+        ]
+    },
+    {
+        "id": "4e8eae15a97c3602",
+        "type": "http in",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Get JSON",
+        "url": "vote/json",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 180,
+        "y": 400,
+        "wires": [
+            [
+                "305616f099bfe6ce"
+            ]
+        ]
+    },
+    {
+        "id": "784fba4f0412932c",
+        "type": "http response",
+        "z": "c3af2d3a3f0580ad",
+        "name": "",
+        "statusCode": "",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "x": 570,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "305616f099bfe6ce",
+        "type": "file in",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Load JSON file",
+        "filename": "talent_votes.json",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "utf8",
+        "allProps": false,
+        "x": 360,
+        "y": 400,
+        "wires": [
+            [
+                "784fba4f0412932c"
+            ]
+        ]
+    },
+    {
+        "id": "57c2dc69bfaacc36",
+        "type": "function",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Set Reply message",
+        "func": "\n// Parse the incoming JSON data\nvar jsonData = JSON.parse(msg.payload);\n\n// Find the talent with the matching code\nvar talentIndex = jsonData.talents.findIndex(talent => talent.code === msg.talentCode);\n\nvar talentName = \"\";\nvar messageResponse = \"Tyvärr matchade ditt meddelande ingen befintlig talang.\"\n\n// If the talent is found, increment the votes\nif (talentIndex !== -1) {\n    talentName = jsonData.talents[talentIndex].name;\n    messageResponse = `Tack för din röst på ${talentName}.`;\n}\n\n// Update the message payload with the modified JSON\nmsg.payload = messageResponse;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1030,
+        "y": 120,
+        "wires": [
+            [
+                "c7188fdf0345f6d0"
+            ]
+        ]
+    },
+    {
+        "id": "7355c2e4cb97cdbb",
+        "type": "http in",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Get Table",
+        "url": "vote/table",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 180,
+        "y": 480,
+        "wires": [
+            [
+                "7eb6b49fb1a08811"
+            ]
+        ]
+    },
+    {
+        "id": "25dd0792ad6d1875",
+        "type": "http response",
+        "z": "c3af2d3a3f0580ad",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 790,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "7eb6b49fb1a08811",
+        "type": "file in",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Load JSON file",
+        "filename": "talent_votes.json",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "utf8",
+        "allProps": false,
+        "x": 360,
+        "y": 480,
+        "wires": [
+            [
+                "5d64b9dbf9940d97"
+            ]
+        ]
+    },
+    {
+        "id": "5d64b9dbf9940d97",
+        "type": "function",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Generate html table",
+        "func": "var jsonData = JSON.parse(msg.payload);\n// Extract the talents array\nconst talents = jsonData.talents;\n\n// Sort the talents by votes (descending)\ntalents.sort((a, b) => b.votes - a.votes);\n\n// Create the HTML table\nlet html = '<table border=1><thead><tr><th>Name</th><th>Code</th><th>Votes</th></tr></thead><tbody>';\ntalents.forEach(talent => {\n    html += `<tr><td>${talent.name}</td><td>${talent.code}</td><td>${talent.votes}</td></tr>`;\n});\nhtml += '</tbody></table>';\n\n// Set the HTML as the message payload\nmsg.payload = html;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 610,
+        "y": 480,
+        "wires": [
+            [
+                "25dd0792ad6d1875"
+            ]
+        ]
+    },
+    {
+        "id": "14393a1db3c226fa",
+        "type": "http in",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Stop voting",
+        "url": "/vote/finished",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 680,
+        "wires": [
+            [
+                "fdc065579e593366"
+            ]
+        ]
+    },
+    {
+        "id": "64c5b2def7db8a7e",
+        "type": "http response",
+        "z": "c3af2d3a3f0580ad",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 590,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "0b44a7e78af36f2b",
+        "type": "switch",
+        "z": "c3af2d3a3f0580ad",
+        "name": "",
+        "property": "votingActivated",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 250,
+        "y": 180,
+        "wires": [
+            [
+                "f23fe2c405a8c931"
+            ],
+            [
+                "a799d70726634f30"
+            ]
+        ]
+    },
+    {
+        "id": "be1679f13f2b8506",
+        "type": "function",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Activate voting",
+        "func": "flow.set('votingActivated', true)\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 800,
+        "wires": [
+            [
+                "2745d60efb686ac5"
+            ]
+        ]
+    },
+    {
+        "id": "9375498d1222859a",
+        "type": "inject",
+        "z": "c3af2d3a3f0580ad",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 120,
+        "y": 800,
+        "wires": [
+            [
+                "be1679f13f2b8506"
+            ]
+        ]
+    },
+    {
+        "id": "a799d70726634f30",
+        "type": "function",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Set Reply message",
+        "func": "let messageResponse = \"Röstningen är tyvärr avslutad\";\n\n// Update the message payload with the modified JSON\nmsg.payload = messageResponse;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 120,
+        "wires": [
+            [
+                "c7188fdf0345f6d0"
+            ]
+        ]
+    },
+    {
+        "id": "fdc065579e593366",
+        "type": "function",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Disable voting",
+        "func": "flow.set('votingActivated', false)\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 680,
+        "wires": [
+            [
+                "64c5b2def7db8a7e"
+            ]
+        ]
+    },
+    {
+        "id": "c7d3dd9591bf8cee",
+        "type": "http in",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Start voting",
+        "url": "/vote/start",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 760,
+        "wires": [
+            [
+                "be1679f13f2b8506"
+            ]
+        ]
+    },
+    {
+        "id": "2745d60efb686ac5",
+        "type": "http response",
+        "z": "c3af2d3a3f0580ad",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 530,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "c09f3c65cdacee9c",
+        "type": "http in",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Get CSV",
+        "url": "vote/csv",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 180,
+        "y": 560,
+        "wires": [
+            [
+                "ba19b5066e0ce00c"
+            ]
+        ]
+    },
+    {
+        "id": "babd9a71b5651e97",
+        "type": "http response",
+        "z": "c3af2d3a3f0580ad",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 790,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "ba19b5066e0ce00c",
+        "type": "file in",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Load JSON file",
+        "filename": "talent_votes.json",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "utf8",
+        "allProps": false,
+        "x": 360,
+        "y": 560,
+        "wires": [
+            [
+                "b4f99037d4be9293"
+            ]
+        ]
+    },
+    {
+        "id": "b4f99037d4be9293",
+        "type": "function",
+        "z": "c3af2d3a3f0580ad",
+        "name": "Generate CSV",
+        "func": "var jsonData = JSON.parse(msg.payload);\n// Extract the talents array\nconst talents = jsonData.talents;\n\n// Create the HTML table\nlet csv = 'name,code,votes\\r';\ntalents.forEach(talent => {\n    csv += `${talent.name},${talent.code},${talent.votes}\\r`;\n});\n\n// Set the HTML as the message payload\nmsg.payload = csv;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 560,
+        "wires": [
+            [
+                "babd9a71b5651e97"
+            ]
+        ]
+    }
+]
